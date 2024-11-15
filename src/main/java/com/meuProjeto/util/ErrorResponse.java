@@ -1,4 +1,4 @@
-package com.meuProjeto;
+package com.meuProjeto.util;
 
 public class ErrorResponse {
     private String error_code;

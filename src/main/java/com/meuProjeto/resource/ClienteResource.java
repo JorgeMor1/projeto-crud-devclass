@@ -1,4 +1,8 @@
-package com.meuProjeto;
+package com.meuProjeto.resource;
+import com.meuProjeto.model.Cliente;
+import com.meuProjeto.repository.ClienteRepository;
+import com.meuProjeto.util.ErrorResponse;
+
 //import java.util.List;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,34 +18,29 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 @Path("/clientes")
-public class ClientesResource {
+public class ClienteResource {
 
     @Inject
-    ClientesRepository clientesRepository;
-
+    ClienteRepository clienteRepository;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response criarCliente(@Valid Clientes cliente) {
+    public Response criarCliente(@Valid Cliente cliente) {
         try {
-            // Verificar se o e-mail já existe
-            if (clientesRepository.emailExistente(cliente.getEmail())) {
+            if (clienteRepository.emailExistente(cliente.getEmail())) {
                 throw new BadRequestException("O e-mail já está cadastrado.");
             }
 
-            // Salvar cliente
-            clientesRepository.salvar(cliente);
+            clienteRepository.salvar(cliente);
             return Response.status(Status.CREATED)
                            .entity(cliente)
                            .build();
         } catch (BadRequestException e) {
-            // Retonrna erro 40 se o e-mail já está cadastrado
             return Response.status(Status.BAD_REQUEST)
                            .entity(new ErrorResponse("EMAIL_ALREADY_EXISTS", e.getMessage()))
                            .build();
         } catch (Exception e) {
-            // Tratar alguns erros internos do sistema
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                            .entity(new ErrorResponse("INTERNAL_SERVER_ERROR", "Erro inesperado ao salvar cliente"))
                            .build();
