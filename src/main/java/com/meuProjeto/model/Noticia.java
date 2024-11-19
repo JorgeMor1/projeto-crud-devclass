@@ -70,7 +70,7 @@ public class Noticia {
         this.url = url;
     }
 
-    public boolean isProcessada(boolean processada){
+    public boolean isProcessada(){
         return processada;
     }
         

@@ -1,5 +1,6 @@
 package com.meuProjeto.resource;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -9,13 +10,13 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
+import org.mockito.MockitoAnnotations;
 
 import com.meuProjeto.model.Cliente;
 import com.meuProjeto.model.Noticia;
@@ -26,76 +27,53 @@ import com.meuProjeto.service.EmailService;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
-/*public class EmailSchedulerUnitTest {
-    @Mock
-    EmailService emailService;
+public class EmailSchedulerUnitTest {
+        @InjectMocks
+    private EmailScheduler emailScheduler;
 
     @Mock
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
 
     @Mock
-    NoticiaRepository noticiaRepository;
+    private NoticiaRepository noticiaRepository;
 
-    @InjectMocks
-    EmailScheduler emailScheduler;
-
-    Cliente cliente1;
-    Cliente cliente2;
-    Noticia noticia1;
-    Noticia noticia2;
+    @Mock
+    private EmailService emailService;
 
     @BeforeEach
-    void setup() {
-        cliente1 = new Cliente();
-        cliente1.setNome("Cliente 1");
-        cliente1.setEmail("cliente1@example.com");
-        cliente1.setNascimento(LocalDate.of(1990, 1, 1));
-
-        cliente2 = new Cliente();
-        cliente2.setNome("Cliente 2");
-        cliente2.setEmail("cliente2@example.com");
-        cliente2.setNascimento(LocalDate.of(1985, 2, 15));
-
-        noticia1 = new Noticia();
-        noticia1.setTitulo("Notícia 1");
-        noticia1.setDescricao("Descrição 1");
-        noticia1.setUrl("http://noticia1.com");
-        noticia1.setProcessada(false);
-
-        noticia2 = new Noticia();
-        noticia2.setTitulo("Notícia 2");
-        noticia2.setDescricao("Descrição 2");
-        noticia2.setUrl("http://noticia2.com");
-        noticia2.setProcessada(false);
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void testEnviarEmailsDiarios_ComClientesENoticias() {
-        // Mocka os retornos das dependências
-        PanacheQuery<Noticia> mockQuery = mock(PanacheQuery.class);
-        when(clienteRepository.findAllClientes()).thenReturn(Arrays.asList(cliente1, cliente2));
-        when(noticiaRepository.find("processada = false")).thenReturn(mockQuery);
-        
-        //thenReturn(new MockList<>(Arrays.asList(noticia1, noticia2)));
+     @Test
+    void testEnviarEmailsDiarios() {
+        // Arrange: Dados fictícios
+        Cliente cliente1 = new Cliente("João", "joao@example.com", LocalDate.of(2000, 5, 10));
+        Cliente cliente2 = new Cliente("Maria", "maria@example.com", LocalDate.of(1995, 7, 20));
+        List<Cliente> clientes = Arrays.asList(cliente1, cliente2);
 
-        // Executa o método que será testado
+        Noticia noticia1 = new Noticia("Notícia 1", "Descrição 1", "https://testejorge.com");
+        Noticia noticia2 = new Noticia("Notícia 2", "Descrição 2", "https://testejoorge.com");
+        List<Noticia> noticias = Arrays.asList(noticia1, noticia2);
+
+        PanacheQuery<Noticia> mockPanacheQuery = mock(PanacheQuery.class);
+        when(mockPanacheQuery.list()).thenReturn(noticias);
+
+        when(clienteRepository.listAll()).thenReturn(clientes);
+        when(noticiaRepository.find("processada = false")).thenReturn(mockPanacheQuery);
+
+       
         emailScheduler.enviarEmailsDiarios();
 
-        // Verifica se o método de envio de e-mails foi chamado para cada cliente
-        verify(emailService, times(1)).enviarEmailParaCliente(
-                eq(cliente1.getNome()), eq(cliente1.getEmail()), eq(Arrays.asList(noticia1, noticia2)), eq(cliente1.getNascimento())
-        );
-        verify(emailService, times(1)).enviarEmailParaCliente(
-                eq(cliente2.getNome()), eq(cliente2.getEmail()), eq(Arrays.asList(noticia1, noticia2)), eq(cliente2.getNascimento())
-        );
+      
+        verify(emailService, times(1)).enviarEmailParaCliente("João", "joao@example.com", noticias, LocalDate.of(2000, 5, 10));
+        verify(emailService, times(1)).enviarEmailParaCliente("Maria", "maria@example.com", noticias, LocalDate.of(1995, 7, 20));
+        
+        assertTrue(noticia1.isProcessada());
+        assertTrue(noticia2.isProcessada());
 
-        // Verifica se as notícias foram marcadas como processadas
-        verify(noticiaRepository, times(1)).persist(anyList());
+        verify(noticiaRepository, times(1)).persist(noticias);
         verify(noticiaRepository, times(1)).flush();
-
-        // Assegura que os objetos notícia foram atualizados
-        assert noticia1.isProcessada(false);
-        assert noticia2.isProcessada(false);
     }
-    
-}*/
+
+}
