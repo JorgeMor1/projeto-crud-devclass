@@ -3,6 +3,11 @@ package com.meuProjeto.exception;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
+
+import java.util.stream.Collectors;
+
+import com.meuProjeto.util.ErrorResponse;
+
 import jakarta.validation.ConstraintViolationException;
 
 @Provider
@@ -10,15 +15,17 @@ public class ValidationExceptionHandler implements ExceptionMapper <ConstraintVi
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        StringBuilder errorMessage = new StringBuilder();
-        exception.getConstraintViolations().forEach(violation -> 
-            errorMessage.append(violation.getPropertyPath())
-                        .append(": ")
-                        .append(violation.getMessage())
-                        .append("\n")
-        );
+        
+        String mensagemErro = exception.getConstraintViolations().stream()
+        .map(violation -> String.format("Campo '%s': %s", 
+                violation.getPropertyPath(), 
+                violation.getMessage()))
+        .collect(Collectors.joining(", "));
+
+        ErrorResponse errorResponse = new ErrorResponse("VALIDATION_ERROR", mensagemErro);
+
         return Response.status(Response.Status.BAD_REQUEST)
-                       .entity(errorMessage.toString())
+                       .entity(errorResponse) 
                        .build();
     }
 }

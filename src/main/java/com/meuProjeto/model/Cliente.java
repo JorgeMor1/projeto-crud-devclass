@@ -30,7 +30,7 @@ public class Cliente {
         @Email(message = "O email deve ser válido.")
         private String email;
 
-        @PastOrPresent(message = "A data de nascimento deve ser uma data válida (passado ou presente)")
+        @PastOrPresent(message = "A data de nascimento tem que ser uma data válida (passado ou presente)")
         @JsonbTypeAdapter(CustomDateAdapter.class)
         private LocalDate nascimento;
 

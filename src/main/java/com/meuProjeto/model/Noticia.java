@@ -36,11 +36,10 @@ public class Noticia {
     public Noticia() {
     }
 
-    public Noticia(String titulo, String descricao, String url, boolean processada) {
+    public Noticia(String titulo, String descricao, String url) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.url = url;
-        this.processada = processada;
     
     }    
 

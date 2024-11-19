@@ -1,6 +1,7 @@
 package com.meuProjeto.repository;
 
 import java.util.List;
+
 import com.meuProjeto.model.Noticia;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,9 +27,13 @@ public class NoticiaRepository implements PanacheRepository<Noticia> {
     }
 
     
-    public List<Noticia> getNoticiasNaoProcessadas() {
-        return entityManager.createQuery("SELECT n FROM Noticia n WHERE n.processada = false", Noticia.class)
-                            .getResultList();
+    public List<Noticia> getNoticiasNaoProcessadas(int page, int size, String sort) {
+        String jpql = "SELECT n FROM Noticia n WHERE n.processada = false ORDER BY n." + sort;
+        return entityManager.createQuery(jpql, Noticia.class)
+        .setFirstResult(page * size)  
+                        .setMaxResults(size)          
+                        .getResultList();
+                    
     }
     
 }
