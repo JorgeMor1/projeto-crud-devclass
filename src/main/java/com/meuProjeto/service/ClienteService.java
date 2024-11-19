@@ -14,6 +14,7 @@ public class ClienteService {
     ClienteRepository clienteRepository;
 
 public void salvarCliente(Cliente cliente) {
+    
         if (clienteRepository.emailExistente(cliente.getEmail())) {
             throw new BadRequestException("O e-mail já está cadastrado.");
         }

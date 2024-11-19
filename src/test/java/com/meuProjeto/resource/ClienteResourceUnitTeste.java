@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -73,12 +74,12 @@ public class ClienteResourceUnitTeste {
     }
 
 
-/*   
+  
     //TESTE RETORNANDO ERRO 500 AO INVÉS DE 400. QUANDO TENTO MANUAL, ELE RETORNA 400
     @Test
     public void testeCriarCliente_ConstraintViolation() {
         Cliente cliente = new Cliente("João", null, "13/11/2001");
-        String mensagemErro =  "Campo 'email': O campo 'email' é obrigatório";
+        String mensagemErro = "O e-mail do cliente é obrigatório." ;
 
         doThrow(new ConstraintViolationException(mensagemErro, null, "Cliente"))
             .when(clienteService).salvarCliente(cliente);
@@ -91,7 +92,7 @@ public class ClienteResourceUnitTeste {
         ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
         assertEquals("VALIDATION_ERROR", errorResponse.getError_code());;
         assertEquals(mensagemErro, errorResponse.getMessage());
-    }*/
+    }
 
 
 

@@ -38,6 +38,12 @@ public class ClienteResource {
     @Transactional
     public Response criarCliente(@Valid Cliente cliente) {
         
+        if (cliente.getEmail() == null || cliente.getEmail().isBlank()) {
+            return Response.status(Status.BAD_REQUEST)
+                           .entity(new ErrorResponse("VALIDATION_ERROR", "O e-mail do cliente é obrigatório."))
+                           .build();
+        }
+
         try {
             clienteService.salvarCliente(cliente);
             return Response.status(Status.CREATED).entity(cliente).build();
